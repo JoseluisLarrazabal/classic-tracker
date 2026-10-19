@@ -307,16 +307,16 @@ tr.now td{background:var(--accent-soft);}
 
 /* ============ PROGRAMA ============ */
 var PROGRAM = {
-  upperA:{key:"upperA",name:"Upper A",sub:"Énfasis empuje",dow:2,tone:"steel",mins:65,ex:[
-    {id:"incdb",n:"Press inclinado mancuernas 30°",s:4,r:"8–10",rir:"2→1",rest:150,cue:"Baja hasta sentir estiramiento en el pectoral. No choques las mancuernas arriba."},
-    {id:"pull",n:"Dominadas pronadas o jalón ancho",s:4,r:"6–10",rir:"2→1",rest:150,prio:1,cue:"Estira arriba, lleva el pecho a la barra. Si no llegas a 6, usa asistencia."},
+  upper:{key:"upper",name:"Upper",sub:"Torso completo · fuerza",dow:1,tone:"steel",mins:65,hora:"17:30",ex:[
+    {id:"incdb",n:"Press inclinado mancuernas 30°",s:3,r:"8–10",rir:"2→1",rest:150,cue:"Baja hasta sentir estiramiento en el pectoral. No choques las mancuernas arriba."},
+    {id:"pull",n:"Dominadas pronadas o jalón ancho",s:4,r:"8–10",rir:"2→1",rest:150,prio:1,cue:"Estira arriba, lleva el pecho a la barra. Si no llegas a 8, usa asistencia o jalón."},
     {id:"ohpdb",n:"Press militar sentado mancuernas",s:3,r:"8–12",rir:"2",rest:120,cue:"Respaldo a 80–85°, no vertical. Sin arquear la lumbar."},
-    {id:"rowlow",n:"Remo en polea baja neutro",s:3,r:"10–12",rir:"1–2",rest:120,cue:"Deja que la escápula se estire adelante en cada rep, luego retrae."},
-    {id:"latdb",n:"Elevaciones laterales mancuerna",s:4,r:"12–20",rir:"1→0",rest:75,prio:1,cue:"Peso ligero, cero impulso, bajada de 3 s. Sube a la altura del hombro."},
-    {id:"curlinc",n:"Curl inclinado 45°",s:3,r:"10–12",rir:"1",rest:0,ss:"A",cue:"Superserie. Brazo detrás del torso, baja del todo."},
-    {id:"trioh",n:"Extensión tríceps sobre la cabeza",s:3,r:"10–15",rir:"1→0",rest:90,ss:"A",cue:"Superserie. Estira la cabeza larga, que es la que más responde. Codos fijos."}
+    {id:"rowlow",n:"Remo en polea baja neutro",s:3,r:"10–12",rir:"1–2",rest:120,cue:"Deja que la escápula se estire adelante en cada rep, luego retrae. Rango largo."},
+    {id:"latdb",n:"Elevaciones laterales mancuerna",s:3,r:"12–20",rir:"1→0",rest:75,prio:1,cue:"Peso ligero, cero impulso, bajada de 3 s. Sube a la altura del hombro."},
+    {id:"curlz",n:"Curl con barra Z",s:2,r:"10–12",rir:"1",rest:0,ss:"A",cue:"Superserie. Codos quietos al costado, sin balancear la cadera."},
+    {id:"pushd",n:"Push-down con barra recta",s:2,r:"12–15",rir:"1→0",rest:90,ss:"A",cue:"Superserie. Codos pegados al costado. Bloquea abajo 1 s."}
   ]},
-  lowerA:{key:"lowerA",name:"Lower A",sub:"Énfasis cuádriceps · gemelo",dow:4,tone:"amber",mins:60,ex:[
+  lower:{key:"lower",name:"Lower",sub:"Pierna completa · énfasis cuádriceps",dow:2,tone:"amber",mins:60,hora:"9:00",ex:[
     {id:"squat",n:"Sentadilla libre o hack squat",s:4,r:"6–10",rir:"2–3",rest:180,cue:"Hasta paralelo o algo más si el tobillo lo permite. El hack es válido y más seguro."},
     {id:"rdl",n:"Peso muerto rumano con barra",s:3,r:"8–12",rir:"2",rest:150,cue:"Cadera atrás, espalda neutra, barra pegada a la pierna. Baja hasta sentir el isquio."},
     {id:"preslo",n:"Prensa 45° pies bajos y juntos",s:3,r:"10–12",rir:"2→1",rest:120,cue:"Rango completo, rodillas hacia el pecho. No bloquees arriba."},
@@ -325,28 +325,36 @@ var PROGRAM = {
     {id:"abd",n:"Abducción de cadera en máquina",s:2,r:"15–20",rir:"1",rest:60,cue:"Glúteo medio. Mejora la línea del muslo en pose."},
     {id:"vac1",n:"Vacuum abdominal",s:3,r:"20 s",rir:"—",rest:45,cue:"De pie, exhala todo el aire y mete el ombligo hacia la columna. Anota 0 × 20."}
   ]},
-  upperB:{key:"upperB",name:"Upper B",sub:"Énfasis anchura",dow:6,tone:"steel",mins:65,ex:[
-    {id:"latpull",n:"Jalón al pecho agarre ancho",s:4,r:"10–12",rir:"2→1",rest:120,prio:1,cue:"Variante distinta al martes. Pecho arriba, tira con los codos, no con las manos."},
-    {id:"bbrow",n:"Remo con barra a 45°",s:3,r:"8–10",rir:"2",rest:150,cue:"Grosor. Espalda neutra, tira hacia la parte baja del abdomen. Sin tirón lumbar."},
-    {id:"flatm",n:"Press plano en máquina o Smith",s:3,r:"10–12",rir:"1–2",rest:120,cue:"La máquina deja ir cerca del fallo con seguridad. Codos a 45–60°."},
+  push:{key:"push",name:"Push",sub:"Pecho · deltoides · tríceps",dow:4,tone:"steel",mins:65,hora:"9:00",ex:[
+    {id:"incbb",n:"Press inclinado con barra o Smith 30°",s:4,r:"8–10",rir:"2→1",rest:150,cue:"Variante distinta al lunes. Baja controlado al pecho alto, sin rebotar."},
+    {id:"flatm",n:"Press plano en máquina",s:3,r:"10–12",rir:"1–2",rest:120,cue:"La máquina deja ir cerca del fallo con seguridad. Codos a 45–60°."},
+    {id:"flypul",n:"Aperturas en polea de alta a baja",s:3,r:"12–15",rir:"1→0",rest:90,cue:"Tensión constante. Cruza un poco las manos al final para apretar el esternal."},
     {id:"latcab",n:"Elevaciones laterales en polea",s:4,r:"12–20",rir:"1→0",rest:75,prio:1,cue:"La polea da tensión abajo, donde la mancuerna no llega. El ejercicio de tu categoría."},
+    {id:"arnold",n:"Press Arnold o militar en máquina",s:2,r:"10–12",rir:"1–2",rest:120,cue:"Rota de palmas al frente a palmas afuera. Recorrido completo, sin bloquear fuerte."},
+    {id:"trioh",n:"Extensión de tríceps sobre la cabeza",s:3,r:"10–15",rir:"1",rest:0,ss:"A",cue:"Superserie. Estira la cabeza larga, que es la que más responde. Codos fijos."},
+    {id:"pushrope",n:"Push-down con cuerda",s:3,r:"12–15",rir:"1→0",rest:90,ss:"A",cue:"Superserie. Separa las manos al final del recorrido y aguanta 1 s."}
+  ]},
+  pull:{key:"pull",name:"Pull",sub:"Espalda · deltoide posterior · bíceps",dow:5,tone:"steel",mins:60,hora:"15:30",ex:[
+    {id:"latpull",n:"Jalón al pecho agarre ancho",s:4,r:"10–12",rir:"2→1",rest:120,prio:1,cue:"Variante distinta al lunes. Pecho arriba, tira con los codos, no con las manos."},
+    {id:"bbrow",n:"Remo con barra a 45°",s:3,r:"8–10",rir:"2",rest:150,cue:"Grosor. Espalda neutra, tira hacia la parte baja del abdomen. Sin tirón lumbar."},
+    {id:"pullov",n:"Pullover en polea alta",s:3,r:"12–15",rir:"1",rest:90,cue:"Aísla el dorsal sin bíceps. Lo que más ancho construye por unidad de fatiga."},
     {id:"facep",n:"Face pull en polea alta",s:3,r:"15–20",rir:"1",rest:0,ss:"A",cue:"Superserie. Aguanta 1–2 s apretando el deltoide posterior."},
     {id:"revpd",n:"Pájaros en peck-deck invertido",s:3,r:"15–20",rir:"1→0",rest:90,ss:"A",cue:"Superserie. Codos ligeramente flexionados y fijos. Sin trapecio."},
-    {id:"hammer",n:"Curl martillo cruzado",s:3,r:"10–12",rir:"1",rest:0,ss:"B",cue:"Superserie. Braquial: empuja el bíceps hacia arriba y engrosa el antebrazo."},
-    {id:"pushd",n:"Push-down con barra recta",s:3,r:"12–15",rir:"1→0",rest:90,ss:"B",cue:"Superserie. Codos pegados al costado. Bloquea abajo 1 s."}
+    {id:"curlinc",n:"Curl inclinado con mancuernas 45°",s:3,r:"10–12",rir:"1",rest:0,ss:"B",cue:"Superserie. Brazo detrás del torso, baja del todo. Máximo estiramiento."},
+    {id:"hammer",n:"Curl martillo cruzado",s:2,r:"10–12",rir:"1→0",rest:90,ss:"B",cue:"Superserie. Braquial: empuja el bíceps hacia arriba y engrosa el antebrazo."}
   ]},
-  lowerB:{key:"lowerB",name:"Lower B",sub:"Énfasis femoral y glúteo · sóleo",dow:0,tone:"amber",mins:60,ex:[
+  legs:{key:"legs",name:"Legs",sub:"Énfasis femoral y glúteo · sóleo",dow:6,tone:"amber",mins:60,hora:"9:00",ex:[
     {id:"hip",n:"Hip thrust con barra",s:4,r:"8–12",rir:"2→1",rest:150,cue:"Pausa 1 s arriba con la pelvis en retroversión. Barbilla al pecho, sin hiperextender."},
     {id:"preshi",n:"Prensa 45° pies altos y anchos",s:3,r:"12–15",rir:"2→1",rest:120,cue:"Sesgo a isquio y glúteo. Rango completo."},
     {id:"curlly",n:"Curl femoral tumbado",s:3,r:"10–15",rir:"1→0",rest:90,cue:"Cadera pegada al banco. Excéntrica de 3 s."},
     {id:"lunge",n:"Zancadas caminando con mancuernas",s:3,r:"10–12",rir:"2",rest:120,cue:"Paso largo = glúteo, paso corto = cuádriceps. Torso erguido. Anota reps por pierna."},
-    {id:"legext",n:"Extensión de cuádriceps",s:2,r:"15–20",rir:"0–1",rest:90,cue:"Segunda dosis semanal de cuádriceps. Recto femoral y vasto lateral."},
+    {id:"legext",n:"Extensión de cuádriceps",s:3,r:"15–20",rir:"0–1",rest:90,cue:"Segunda dosis semanal de cuádriceps. Recto femoral y vasto lateral."},
     {id:"calfsit",n:"Elevación de talón sentado (sóleo)",s:4,r:"12–20",rir:"0–1",rest:90,prio:1,cue:"Rodilla flexionada = sóleo, la mitad del volumen de la pantorrilla. Pausa 2 s abajo."},
     {id:"crunch",n:"Crunch en polea + vacuum",s:3,r:"12–15",rir:"1",rest:60,cue:"Peso moderado. Costillas a la pelvis, sin rotación con carga. Cierra con 3 vacuums."}
   ]}
 };
-var ORDER=["upperA","lowerA","upperB","lowerB"];
-var DOWMAP={2:"upperA",4:"lowerA",6:"upperB",0:"lowerB"};
+var ORDER=["upper","lower","push","pull","legs"];
+var DOWMAP={1:"upper",2:"lower",4:"push",5:"pull",6:"legs"};
 var DOWNAMES=["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
 
 var BLOCKS=[
@@ -451,7 +459,7 @@ function viewHoy(){
     var P=PROGRAM[key];
     var done=todaySess?doneCount(todaySess):0, plan=plannedCount(key,w);
     h+='<div class="hero '+P.tone+'"><div class="hero-top">'+
-       '<div class="lbl">'+DOWNAMES[dow]+' · hoy</div>'+
+       '<div class="lbl">'+DOWNAMES[dow]+' · hoy'+(P.hora?' · '+P.hora:'')+'</div>'+
        '<h2>'+P.name+'</h2><div class="sub">'+esc(P.sub)+'</div>'+
        '<div class="hero-meta">'+
          '<div><div class="k">Ejercicios</div><div class="v num">'+P.ex.length+'</div></div>'+
@@ -501,8 +509,8 @@ function viewHoy(){
        '<div class="d'+(dw==null?'':(dw>0?' up':' down'))+'">'+(dw==null?'sin dato previo':(dw>0?'+':'')+n1(dw)+' vs. semana anterior')+'</div></div>'+
      '<div class="stat"><div class="k">Cintura</div><div class="v num">'+(waists.length?n1(waists[0].waist):'—')+' <small>cm</small></div>'+
        '<div class="d'+(dwa==null?'':(dwa>0?' up':' down'))+'">'+(dwa==null?'sin dato previo':(dwa>0?'+':'')+n1(dwa)+' cm')+'</div></div>'+
-     '<div class="stat"><div class="k">Sesiones</div><div class="v num">'+sessionsThisWeek().filter(function(s){return doneCount(s)>0;}).length+'<small>/4</small></div>'+
-       '<div class="d">meta: 4 por semana</div></div>'+
+     '<div class="stat"><div class="k">Sesiones</div><div class="v num">'+sessionsThisWeek().filter(function(s){return doneCount(s)>0;}).length+'<small>/5</small></div>'+
+       '<div class="d">meta: 5 por semana</div></div>'+
      '</div>';
   if(a1==null) h+='<div class="note">Anota tu peso cada mañana en la pestaña <b>Progreso</b>. Lo que importa es el promedio semanal, no el número de un día.</div>';
   return h;
@@ -598,7 +606,7 @@ function lineChart(pts,unit,color){
 function viewPlan(){
   var w=currentWeek()||0;
   var h='<div class="card"><div class="lbl">El marco</div>'+
-   '<p class="muted" style="margin-top:6px">Upper/Lower de 4 días, 2 estímulos semanales por músculo. Progresión por doble progresión y nada más: sin drop sets ni rest-pause, porque la complejidad es superficie donde fallar.</p></div>';
+   '<p class="muted" style="margin-top:6px">UL/PPL de 5 días: Upper y Lower de lunes y martes, Push·Pull·Legs de jueves a sábado. Cada músculo recibe 2 estímulos por semana. Progresión por doble progresión y nada más: sin drop sets ni rest-pause, porque la complejidad es superficie donde fallar.</p></div>';
 
   h+='<div class="hardnote"><b>El techo natural.</b> El cap de tu categoría (168–170 cm) son ~82,5 kg a 5–6 % de grasa: unos 78 kg magros, un FFMI de 27–28. El techo natural documentado ronda 25. El campo competitivo de Classic Physique usa farmacología. El look clásico sí es alcanzable natural; el cap de la categoría como vara, no. Compárate contigo de hace 8 semanas.</div>';
 
@@ -611,6 +619,19 @@ function viewPlan(){
     h+='<tr'+(isnow?' class="now"':'')+'><td class="num">'+r[0]+'</td><td><b>'+r[1]+'</b></td><td class="num">'+r[2]+'</td><td>'+r[3]+'</td></tr>';
   });
   h+='</table></div></div>';
+
+  h+='<div class="lbl" style="margin:18px 0 7px">Volumen semanal</div><div class="card"><div class="scroll"><table>'+
+     '<tr><th>Grupo</th><th class="num">Series</th><th>Dónde</th></tr>'+
+     '<tr><td><b>Dorsal / espalda</b></td><td class="num">17</td><td>Upper 7 · Pull 10</td></tr>'+
+     '<tr><td><b>Deltoide lateral</b></td><td class="num">7 + indirecto</td><td>Upper 3 · Push 4</td></tr>'+
+     '<tr><td>Pecho</td><td class="num">13</td><td>Upper 3 · Push 10</td></tr>'+
+     '<tr><td>Cuádriceps</td><td class="num">13</td><td>Lower 7 · Legs 6</td></tr>'+
+     '<tr><td>Isquios / glúteo</td><td class="num">16</td><td>Lower 6 · Legs 10</td></tr>'+
+     '<tr><td><b>Gemelo / sóleo</b></td><td class="num">8</td><td>Lower 4 · Legs 4</td></tr>'+
+     '<tr><td>Deltoide posterior</td><td class="num">6</td><td>Pull 6</td></tr>'+
+     '<tr><td>Bíceps</td><td class="num">7</td><td>Upper 2 · Pull 5</td></tr>'+
+     '<tr><td>Tríceps</td><td class="num">8</td><td>Upper 2 · Push 6</td></tr>'+
+     '</table></div><p class="tiny" style="margin-top:9px">En negrita las prioridades de Classic Physique: anchura de espalda, deltoide lateral y pantorrilla.</p></div>';
 
   h+='<div class="lbl" style="margin:18px 0 7px">Descansos</div><div class="card"><table>'+
      '<tr><td>Compuestos pesados</td><td class="num">2–3 min</td></tr>'+
@@ -632,13 +653,13 @@ function viewPlan(){
      '<tr><td>Bajas más de 0,7 kg/semana</td><td>Suma 200 kcal</td></tr>'+
      '<tr><td>El peso no baja pero la cintura sí</td><td><b style="color:var(--good)">Perfecto. No cambies nada</b></td></tr>'+
      '<tr><td>Cargas y peso bajan juntos</td><td>Sube calorías y revisa el sueño</td></tr>'+
-     '<tr><td>Menos de 3 sesiones por semana</td><td>Baja a 3 días fijos</td></tr>'+
+     '<tr><td>Menos de 4 sesiones por semana</td><td>Vuelve al plan de 4 días</td></tr>'+
      '</table></div>';
 
   h+='<div class="lbl" style="margin:18px 0 7px">Cardio</div><div class="card">'+
-     '<p class="muted" style="margin:0">4–5 caminatas de 35–45 min a FC 110–130 (5–6 km/h, 3–5 % de inclinación) + 8.000–10.000 pasos diarios. Nunca antes de Lower. Si el peso se estanca, <b>añade cardio antes de recortar comida</b>.</p></div>';
+     '<p class="muted" style="margin:0">4 caminatas de 30–40 min a FC 110–130 (5–6 km/h, 3–5 % de inclinación) + 8.000–10.000 pasos diarios. Nunca antes de Lower. Si el peso se estanca, <b>añade cardio antes de recortar comida</b>.</p></div>';
 
-  h+='<div class="lbl" style="margin:18px 0 7px">Las 4 sesiones</div>';
+  h+='<div class="lbl" style="margin:18px 0 7px">Las 5 sesiones</div>';
   ORDER.forEach(function(k){
     var P=PROGRAM[k], blk=blockFor(w<1?1:w);
     h+='<div class="card"><div style="display:flex;align-items:baseline;gap:9px">'+
