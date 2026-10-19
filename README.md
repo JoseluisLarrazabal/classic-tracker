@@ -1,11 +1,11 @@
 # Classic Physique Tracker
 
-PWA instalable para el plan Upper/Lower de 4 días. Sin build, sin dependencias:
+PWA instalable para el split UL/PPL de 5 días. Sin build, sin dependencias:
 HTML, CSS y JS planos. Los datos viven en `localStorage` del dispositivo.
 
 ## Qué hace
 
-- Detecta la sesión del día (Mar · Jue · Sáb · Dom) y calcula series y RIR según la semana del bloque.
+- Detecta la sesión del día (Lun Upper · Mar Lower · Jue Push · Vie Pull · Sáb Legs) y calcula series y RIR según la semana del bloque.
 - Registra peso × reps por serie, muestra lo que levantaste la vez anterior y arranca el temporizador de descanso al cerrar cada serie.
 - Avanza solo al siguiente ejercicio cuando terminas el actual.
 - Guarda peso corporal y cintura, con gráficas.

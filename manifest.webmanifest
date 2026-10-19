@@ -1,7 +1,7 @@
 {
   "name": "Classic Physique Tracker",
   "short_name": "Classic",
-  "description": "Registro de entrenamiento del plan Upper/Lower de 4 dias: series, descansos, peso corporal y progreso.",
+  "description": "Registro del split UL/PPL de 5 dias: series, descansos, peso corporal y progreso.",
   "lang": "es",
   "dir": "ltr",
   "start_url": ".",

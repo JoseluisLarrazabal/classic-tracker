@@ -5,7 +5,7 @@
    - Navegaciones: se sirve el index cacheado si no hay red, para que la app abra offline.
    Los datos de entrenamiento viven en localStorage, no aquí: borrar la caché no los toca. */
 
-const VERSION = "cpt-v1";
+const VERSION = "cpt-v2";
 const SHELL = VERSION + "-shell";
 const FONTS = VERSION + "-fonts";
 
