@@ -959,7 +959,7 @@ document.addEventListener("click",function(ev){
     openSession(key); return;
   }
   if(a==="picksel"){ openSession(t.getAttribute("data-key")); return; }
-  if(a==="close"){ S.active=null; stopTimer(); releaseWake(); renderSheet(); render(); return; }
+  if(a==="close"){ S.active=null; stopTimer(); releaseWake(); renderSheet(); render(); if(window.swApplyPending) window.swApplyPending(); return; }
   if(a==="toggle"){
     var id=t.getAttribute("data-ex");
     S.active.open=(S.active.open===id?null:id);
@@ -1090,10 +1090,27 @@ if(/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.navigator.standalone)
   setTimeout(showInstallBtn,1200);
 }
 
-/* --- service worker --- */
+/* --- service worker + auto-actualizacion --- */
 if("serviceWorker" in navigator){
+  var swHadCtrl=!!navigator.serviceWorker.controller, swPending=false, swReloading=false;
+  function swApply(){
+    if(swReloading) return;
+    if(S.active){ swPending=true; alertBox("Hay una version nueva. Se aplica al terminar la sesion."); return; }
+    swReloading=true; location.reload();
+  }
+  window.swApplyPending=function(){ if(swPending) swApply(); };
+  navigator.serviceWorker.addEventListener("message",function(e){
+    if(e.data&&e.data.type==="sw-updated") swApply();
+  });
+  navigator.serviceWorker.addEventListener("controllerchange",function(){
+    if(swHadCtrl) swApply();
+  });
   window.addEventListener("load",function(){
-    navigator.serviceWorker.register("sw.js",{scope:"./"}).catch(function(){});
+    navigator.serviceWorker.register("sw.js",{scope:"./"}).then(function(reg){
+      document.addEventListener("visibilitychange",function(){
+        if(!document.hidden){ try{ reg.update(); }catch(e){} }
+      });
+    }).catch(function(){});
   });
 }
 
