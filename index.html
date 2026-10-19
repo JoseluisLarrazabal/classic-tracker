@@ -284,6 +284,36 @@ tr.now td{background:var(--accent-soft);}
 .hitem .nm{font-family:var(--display);font-size:16px;font-weight:700;flex:1;min-width:0;}
 .hitem .vol{font-family:var(--display);font-size:13px;color:var(--fg-2);font-weight:600;flex:none;}
 .empty{text-align:center;color:var(--fg-3);padding:26px 14px;font-size:13.5px;}
+
+/* cabecera kg / reps y pestaña dieta */
+.setkeys{display:flex;gap:7px;align-items:center;margin-bottom:5px;}
+.setkeys .setn{visibility:hidden;}
+.setkeys .kh{flex:1;min-width:0;text-align:center;font-family:var(--display);font-size:10.5px;
+  font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--fg-3);}
+.setkeys .xs{width:9px;flex:none;}
+.setkeys .bs{width:38px;flex:none;}
+.chips{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;}
+.chip{flex:1 1 auto;min-width:0;border:1px solid var(--line-2);background:var(--surface);color:var(--fg-2);
+  border-radius:999px;padding:7px 12px;cursor:pointer;font-family:var(--display);font-size:13px;
+  font-weight:600;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff;}
+.meal{border:1px solid var(--line);background:var(--surface);border-radius:var(--r);margin-bottom:10px;overflow:hidden;}
+.meal-h{display:flex;align-items:baseline;gap:9px;padding:11px 13px 8px;}
+.meal-h .hh{font-family:var(--display);font-size:17px;font-weight:700;color:var(--accent);flex:none;
+  font-variant-numeric:tabular-nums;}
+.meal-h .nn{font-family:var(--display);font-size:16px;font-weight:700;flex:1;min-width:0;}
+.meal-h .kk{font-family:var(--display);font-size:12.5px;color:var(--fg-3);font-weight:600;flex:none;}
+.meal ul{list-style:none;margin:0;padding:0 13px 10px;}
+.meal li{display:flex;gap:10px;padding:3px 0;font-size:13.5px;border-bottom:1px solid var(--line);}
+.meal li:last-child{border-bottom:0;}
+.meal li .f{flex:1;min-width:0;}
+.meal li .q{flex:none;font-family:var(--display);font-size:14px;font-weight:700;
+  font-variant-numeric:tabular-nums;color:var(--fg);}
+.meal .mac{padding:7px 13px;background:var(--surface-2);border-top:1px solid var(--line);
+  font-family:var(--display);font-size:12.5px;font-weight:600;letter-spacing:.04em;color:var(--fg-2);}
+.meal .nt{padding:9px 13px;font-size:12.8px;color:var(--fg-2);border-top:1px solid var(--line);}
+.legend-row{display:flex;gap:9px;align-items:flex-start;margin-bottom:8px;font-size:13.3px;}
+.legend-row .tag{flex:none;margin-top:1px;}
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important;}}
 </style>
 </head>
@@ -377,6 +407,21 @@ function setsFor(ex,blk){
   return s;
 }
 
+var DIETA = {"pm":{"nom":"Entreno tarde","sub":"Lunes y viernes · entrenas 17:30 / 15:30","meta":2600,"comidas":[{"h":"7:00","n":"Desayuno","al":[{"n":"Huevos enteros","g":150,"u":"g"},{"n":"Avena","g":70,"u":"g"},{"n":"Leche descremada","g":250,"u":"ml"},{"n":"Plátano","g":120,"u":"g"}],"p":38,"c":84,"f":21,"k":672,"nota":"Antes de salir a clase. Si vas corto de tiempo, deja la avena remojada desde la noche."},{"h":"12:00","n":"Almuerzo · táper","al":[{"n":"Pechuga de pollo (cruda)","g":180,"u":"g"},{"n":"Arroz (crudo)","g":90,"u":"g"},{"n":"Verduras (tomate, lechuga, zanahoria)","g":200,"u":"g"},{"n":"Aceite","g":5,"u":"ml"}],"p":51,"c":82,"f":11,"k":626,"nota":"Llévalo hecho. Es tu comida más grande del día."},{"h":"16:00","n":"Pre-entreno","al":[{"n":"Pan integral","g":80,"u":"g"},{"n":"Proteína en polvo","g":30,"u":"g"},{"n":"Plátano","g":120,"u":"g"}],"p":33,"c":66,"f":5,"k":435,"nota":"90 min antes de entrenar. Sin esto la sesión de la tarde sale floja."},{"h":"19:30","n":"Post-entreno · cena","al":[{"n":"Carne de res magra (cruda)","g":180,"u":"g"},{"n":"Papa (cocida)","g":350,"u":"g"},{"n":"Verduras (tomate, lechuga, zanahoria)","g":250,"u":"g"},{"n":"Aceite","g":5,"u":"ml"}],"p":49,"c":85,"f":17,"k":684,"nota":"Al volver del gimnasio. Carbohidrato alto para reponer."},{"h":"22:00","n":"Antes de dormir","al":[{"n":"Requesón","g":150,"u":"g"},{"n":"Manzana","g":150,"u":"g"}],"p":17,"c":26,"f":6,"k":226,"nota":"Opcional pero ayuda: proteína lenta durante la noche."}],"tot":{"p":186,"c":342,"f":59,"k":2644}},"am":{"nom":"Entreno mañana","sub":"Martes, jueves y sábado · entrenas 9:00","meta":2600,"comidas":[{"h":"7:30","n":"Desayuno · pre-entreno","al":[{"n":"Huevos enteros","g":150,"u":"g"},{"n":"Avena","g":70,"u":"g"},{"n":"Leche descremada","g":250,"u":"ml"},{"n":"Plátano","g":120,"u":"g"}],"p":38,"c":84,"f":21,"k":672,"nota":"90 min antes de entrenar. No entrenes en ayunas: pierdes fuerza en los compuestos."},{"h":"10:45","n":"Post-entreno","al":[{"n":"Pechuga de pollo (cruda)","g":180,"u":"g"},{"n":"Arroz (crudo)","g":80,"u":"g"},{"n":"Verduras (tomate, lechuga, zanahoria)","g":200,"u":"g"},{"n":"Aceite","g":5,"u":"ml"}],"p":50,"c":74,"f":10,"k":592,"nota":"Al salir del gimnasio. Tu comida principal."},{"h":"13:00","n":"Media tarde","al":[{"n":"Yogur natural","g":200,"u":"g"},{"n":"Avena","g":40,"u":"g"},{"n":"Plátano","g":120,"u":"g"}],"p":14,"c":62,"f":6,"k":356,"nota":"Martes y jueves cómelo antes de entrar a clase de 13:00, o llévatelo."},{"h":"16:30","n":"Merienda","al":[{"n":"Pan integral","g":80,"u":"g"},{"n":"Atún en lata al agua, escurrido","g":120,"u":"g"},{"n":"Palta","g":50,"u":"g"}],"p":38,"c":40,"f":12,"k":418,"nota":"Sándwich de atún con palta. Se arma en dos minutos."},{"h":"20:00","n":"Cena","al":[{"n":"Pescado blanco (crudo)","g":200,"u":"g"},{"n":"Papa (cocida)","g":300,"u":"g"},{"n":"Verduras (tomate, lechuga, zanahoria)","g":250,"u":"g"},{"n":"Aceite","g":5,"u":"ml"}],"p":48,"c":75,"f":10,"k":579,"nota":"Si no hay pescado, pollo o huevos sirven igual."}],"tot":{"p":187,"c":335,"f":59,"k":2617}},"off":{"nom":"Descanso","sub":"Miércoles y domingo · sin pesas","meta":2150,"comidas":[{"h":"7:30","n":"Desayuno","al":[{"n":"Huevos enteros","g":100,"u":"g"},{"n":"Claras","g":120,"u":"g"},{"n":"Avena","g":60,"u":"g"},{"n":"Leche descremada","g":250,"u":"ml"},{"n":"Plátano","g":100,"u":"g"}],"p":43,"c":73,"f":15,"k":603,"nota":"Menos yema, más clara: baja la grasa sin bajar la proteína."},{"h":"12:30","n":"Almuerzo","al":[{"n":"Pechuga de pollo (cruda)","g":200,"u":"g"},{"n":"Quinua (cruda)","g":70,"u":"g"},{"n":"Verduras (tomate, lechuga, zanahoria)","g":250,"u":"g"},{"n":"Aceite","g":5,"u":"ml"}],"p":60,"c":60,"f":15,"k":610,"nota":"Miércoles llévalo en táper: tienes clase de 8:30 a 17:00."},{"h":"16:30","n":"Merienda","al":[{"n":"Yogur natural","g":200,"u":"g"},{"n":"Proteína en polvo","g":25,"u":"g"},{"n":"Manzana","g":150,"u":"g"},{"n":"Maní","g":15,"u":"g"}],"p":31,"c":35,"f":12,"k":373,"nota":"Un puñado de maní, no más: es muy calórico."},{"h":"20:00","n":"Cena","al":[{"n":"Pescado blanco (crudo)","g":220,"u":"g"},{"n":"Papa (cocida)","g":250,"u":"g"},{"n":"Verduras (tomate, lechuga, zanahoria)","g":250,"u":"g"},{"n":"Palta","g":50,"u":"g"}],"p":52,"c":70,"f":13,"k":598,"nota":"Día sin entreno: menos carbohidrato, misma proteína."}],"tot":{"p":186,"c":238,"f":54,"k":2184}}};
+var DIETDOW={1:"pm",2:"am",3:"off",4:"am",5:"pm",6:"am",0:"off"};
+var COMPRAS=[
+ {g:"Proteína",i:["Pechuga de pollo — 1,3 kg","Pescado blanco — 1 kg","Carne de res magra — 400 g","Atún en lata al agua — 3 latas","Huevos — 2 docenas","Requesón — 300 g","Yogur natural — 1 kg","Proteína en polvo — 4 scoops"]},
+ {g:"Carbohidratos",i:["Avena — 600 g","Arroz — 500 g","Quinua — 150 g","Papa — 2,5 kg","Pan integral — 1 bolsa","Plátanos — 14 unidades"]},
+ {g:"Grasas",i:["Palta — 2 unidades","Aceite — el que ya tienes","Maní — 1 bolsa pequeña"]},
+ {g:"Verdura y fruta",i:["Tomate, lechuga, zanahoria — 2,5 kg en total","Manzanas — 4 unidades","Leche descremada — 2 litros"]}
+];
+var PREP=[
+ "Domingo después de entrenar: cocina 1,3 kg de pollo y una olla grande de arroz. Te cubre los almuerzos de lunes a jueves.",
+ "Deja armados los tápers del lunes y el miércoles la noche anterior: son tus días de clase de 8:30 a 17:00.",
+ "La avena del desayuno se puede dejar remojada en leche desde la noche. Se come fría y se ahorra diez minutos.",
+ "Las papas cocidas aguantan 4 días en refrigerador. Cocina 2 kg el domingo y listo.",
+ "Si un día se rompe el plan, vuelve en la siguiente comida, no al día siguiente."
+];
 /* ============ UTIL ============ */
 function el(h){var d=document.createElement("div");d.innerHTML=h;return d.firstElementChild;}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
@@ -390,7 +435,7 @@ function n1(v){return v==null?"—":(Math.round(v*10)/10).toFixed(1);}
 
 /* ============ ESTADO ============ */
 var S={
-  tab:"hoy", uid:null, db:null, ready:false, writable:true,
+  tab:"hoy", diet:null, uid:null, db:null, ready:false, writable:true,
   profile:null, sessions:[], metrics:[],
   active:null,          // {key,date,id,entries:{},open:exId}
   timer:null, tint:null, wake:null
@@ -602,6 +647,60 @@ function lineChart(pts,unit,color){
     lab+'</svg><div class="legend"><span><i style="background:'+color+'"></i>'+pts.length+' registros · último '+n1(last.v)+' '+unit+'</span></div>';
 }
 
+
+/* ============ RENDER: DIETA ============ */
+function viewDieta(){
+  var k=S.diet||DIETDOW[new Date().getDay()];
+  var P=DIETA[k];
+  var h='<div class="chips">';
+  [["pm","Entreno tarde"],["am","Entreno mañana"],["off","Descanso"]].forEach(function(t){
+    h+='<button class="chip" aria-pressed="'+(k===t[0])+'" data-act="diet" data-k="'+t[0]+'">'+t[1]+'</button>';
+  });
+  h+='</div>';
+  h+='<div class="card" style="margin-bottom:12px"><div class="lbl">'+esc(P.nom)+'</div>'+
+     '<div class="muted" style="margin-top:4px">'+esc(P.sub)+'</div></div>';
+  h+='<div class="kpi" style="margin-top:0">'+
+     '<div><div class="k">Calorías</div><div class="v num">'+P.tot.k+'</div><div class="n">meta '+P.meta+'</div></div>'+
+     '<div><div class="k">Proteína</div><div class="v num">'+P.tot.p+' <small>g</small></div><div class="n">2,2 g/kg</div></div>'+
+     '<div><div class="k">Carbo</div><div class="v num">'+P.tot.c+' <small>g</small></div><div class="n"></div></div>'+
+     '<div><div class="k">Grasa</div><div class="v num">'+P.tot.f+' <small>g</small></div><div class="n"></div></div>'+
+     '</div>';
+  P.comidas.forEach(function(c){
+    h+='<div class="meal"><div class="meal-h"><span class="hh">'+c.h+'</span>'+
+       '<span class="nn">'+esc(c.n)+'</span><span class="kk">'+c.k+' kcal</span></div><ul>';
+    c.al.forEach(function(a){
+      h+='<li><span class="f">'+esc(a.n)+'</span><span class="q">'+a.g+' '+a.u+'</span></li>';
+    });
+    h+='</ul><div class="mac">P '+c.p+' g · C '+c.c+' g · G '+c.f+' g</div>'+
+       '<div class="nt">'+esc(c.nota)+'</div></div>';
+  });
+  h+='<div class="note"><b>Los pesos son en crudo</b> para carne, pollo, pescado, arroz y quinua: es como los compras y como los pesas antes de cocinar. La papa va cocida. Pesa la comida las primeras 3 semanas hasta que calibres el ojo.</div>';
+
+  h+='<div class="lbl" style="margin:18px 0 7px">Lista del súper · una semana</div>';
+  COMPRAS.forEach(function(g){
+    h+='<div class="card" style="margin-bottom:9px"><div class="lbl">'+esc(g.g)+'</div><ul style="margin:7px 0 0;padding-left:17px">';
+    g.i.forEach(function(x){ h+='<li style="font-size:13.5px">'+esc(x)+'</li>'; });
+    h+='</ul></div>';
+  });
+
+  h+='<div class="lbl" style="margin:18px 0 7px">Cómo prepararlo</div><div class="card"><ol style="margin:0;padding-left:17px">';
+  PREP.forEach(function(x){ h+='<li style="font-size:13.5px;margin-bottom:6px">'+esc(x)+'</li>'; });
+  h+='</ol></div>';
+
+  h+='<div class="lbl" style="margin:18px 0 7px">Cambios permitidos</div><div class="card"><table>'+
+     '<tr><th>Si no hay…</th><th>Cámbialo por</th></tr>'+
+     '<tr><td>Pescado</td><td>Pollo, carne magra o 4 huevos</td></tr>'+
+     '<tr><td>Quinua</td><td>Arroz, misma cantidad en crudo</td></tr>'+
+     '<tr><td>Papa</td><td>Camote, yuca o arroz</td></tr>'+
+     '<tr><td>Requesón</td><td>Yogur natural o 3 claras</td></tr>'+
+     '<tr><td>Proteína en polvo</td><td>1 lata de atún o 3 huevos</td></tr>'+
+     '<tr><td>Palta</td><td>Un puñado de maní (20 g)</td></tr>'+
+     '</table><p class="tiny" style="margin-top:9px">Cambia dentro del mismo grupo y los macros se sostienen. Lo que no se cambia es la proteína total del día.</p></div>';
+
+  h+='<p class="tiny" style="margin:14px 0 0">Material educativo, no consejo médico ni plan nutricional personalizado. Si tienes alguna condición de salud, consúltalo con un profesional antes de seguirlo.</p>';
+  return h;
+}
+
 /* ============ RENDER: PLAN ============ */
 function viewPlan(){
   var w=currentWeek()||0;
@@ -632,6 +731,12 @@ function viewPlan(){
      '<tr><td>Bíceps</td><td class="num">7</td><td>Upper 2 · Pull 5</td></tr>'+
      '<tr><td>Tríceps</td><td class="num">8</td><td>Upper 2 · Push 6</td></tr>'+
      '</table></div><p class="tiny" style="margin-top:9px">En negrita las prioridades de Classic Physique: anchura de espalda, deltoide lateral y pantorrilla.</p></div>';
+
+  h+='<div class="lbl" style="margin:18px 0 7px">Las etiquetas</div><div class="card">'+
+    '<div class="legend-row"><span class="tag t-amber">Prio</span><span>Prioridad de Classic Physique: anchura de espalda, deltoide lateral y pantorrilla. Si andas corto de tiempo, estos se hacen completos y recortas de otro lado.</span></div>'+
+    '<div class="legend-row"><span class="tag t-steel">SS A</span><span>Superserie. Los dos ejercicios con la misma letra van <b>seguidos, sin descanso entre ellos</b>; descansas 90 s recién al terminar el par. Por eso el primero marca 0 s.</span></div>'+
+    '<div class="legend-row"><span class="tag t-green">2/3</span><span>Series anotadas de las que tocan hoy.</span></div>'+
+    '</div>';
 
   h+='<div class="lbl" style="margin:18px 0 7px">Descansos</div><div class="card"><table>'+
      '<tr><td>Compuestos pesados</td><td class="num">2–3 min</td></tr>'+
@@ -712,6 +817,7 @@ function renderSheet(){
         h+='<div class="prev">Última vez ('+fmtDate(prev.date)+'): <b>'+
            prev.sets.filter(function(x){return x&&x.r;}).map(function(x){return (x.w||0)+"×"+x.r;}).join("  ")+'</b></div>';
       } else h+='<div class="prev">Primera vez con este ejercicio. Elige un peso que te deje a 2 reps del fallo.</div>';
+      h+='<div class="setkeys"><span class="setn">S0</span><span class="kh">kg</span><span class="xs"></span><span class="kh">reps</span><span class="bs"></span></div>';
       h+='<div class="sets">';
       for(var i=0;i<nsets;i++){
         var v=arr[i]||{};
@@ -892,6 +998,7 @@ document.addEventListener("click",function(ev){
   if(a==="exportjson"){ exportJSON(); return; }
   if(a==="importjson"){ var fi=document.getElementById("impfile"); if(fi) fi.click(); return; }
   if(a==="install"){ doInstall(); return; }
+  if(a==="diet"){ S.diet=t.getAttribute("data-k"); render(); return; }
   if(a==="t30"){ if(S.timer){S.timer.left+=30;paintTimer();} return; }
   if(a==="tskip"){ stopTimer(); return; }
 });
@@ -941,9 +1048,9 @@ function render(){
   else pill.innerHTML="Semana <b>"+(w<1?0:w)+"</b>/12";
 
   var v=document.getElementById("view");
-  v.innerHTML = S.tab==="hoy"?viewHoy() : S.tab==="prog"?viewProgreso() : viewPlan();
+  v.innerHTML = S.tab==="hoy"?viewHoy() : S.tab==="prog"?viewProgreso() : S.tab==="dieta"?viewDieta() : viewPlan();
 
-  var tabs=[["hoy","Hoy"],["prog","Progreso"],["plan","Plan"]];
+  var tabs=[["hoy","Hoy"],["prog","Progreso"],["dieta","Dieta"],["plan","Plan"]];
   document.getElementById("tabs").innerHTML=tabs.map(function(t){
     return '<button class="tab" role="tab" aria-selected="'+(S.tab===t[0])+'" data-act="tab" data-tab="'+t[0]+'">'+t[1]+'</button>';
   }).join("");
