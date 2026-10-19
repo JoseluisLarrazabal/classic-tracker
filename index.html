@@ -292,8 +292,10 @@ tr.now td{background:var(--accent-soft);}
   font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--fg-3);}
 .setkeys .xs{width:9px;flex:none;}
 .setkeys .bs{width:38px;flex:none;}
-.chips{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;}
-.chip{flex:1 1 auto;min-width:0;border:1px solid var(--line-2);background:var(--surface);color:var(--fg-2);
+.macros{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px;}
+@media (min-width:540px){.macros{grid-template-columns:repeat(4,1fr);}}
+.chips{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px;}
+.chip{min-width:0;border:1px solid var(--line-2);background:var(--surface);color:var(--fg-2);
   border-radius:999px;padding:7px 12px;cursor:pointer;font-family:var(--display);font-size:13px;
   font-weight:600;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;}
 .chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff;}
@@ -653,17 +655,17 @@ function viewDieta(){
   var k=S.diet||DIETDOW[new Date().getDay()];
   var P=DIETA[k];
   var h='<div class="chips">';
-  [["pm","Entreno tarde"],["am","Entreno mañana"],["off","Descanso"]].forEach(function(t){
+  [["pm","Tarde"],["am","Mañana"],["off","Descanso"]].forEach(function(t){
     h+='<button class="chip" aria-pressed="'+(k===t[0])+'" data-act="diet" data-k="'+t[0]+'">'+t[1]+'</button>';
   });
   h+='</div>';
   h+='<div class="card" style="margin-bottom:12px"><div class="lbl">'+esc(P.nom)+'</div>'+
      '<div class="muted" style="margin-top:4px">'+esc(P.sub)+'</div></div>';
-  h+='<div class="kpi" style="margin-top:0">'+
-     '<div><div class="k">Calorías</div><div class="v num">'+P.tot.k+'</div><div class="n">meta '+P.meta+'</div></div>'+
-     '<div><div class="k">Proteína</div><div class="v num">'+P.tot.p+' <small>g</small></div><div class="n">2,2 g/kg</div></div>'+
-     '<div><div class="k">Carbo</div><div class="v num">'+P.tot.c+' <small>g</small></div><div class="n"></div></div>'+
-     '<div><div class="k">Grasa</div><div class="v num">'+P.tot.f+' <small>g</small></div><div class="n"></div></div>'+
+  h+='<div class="macros">'+
+     '<div class="stat"><div class="k">Calorías</div><div class="v num">'+P.tot.k+'</div><div class="d">meta '+P.meta+'</div></div>'+
+     '<div class="stat"><div class="k">Proteína</div><div class="v num">'+P.tot.p+' <small>g</small></div><div class="d">2,2 g/kg</div></div>'+
+     '<div class="stat"><div class="k">Carbohidrato</div><div class="v num">'+P.tot.c+' <small>g</small></div><div class="d">energía del día</div></div>'+
+     '<div class="stat"><div class="k">Grasa</div><div class="v num">'+P.tot.f+' <small>g</small></div><div class="d">hormonal</div></div>'+
      '</div>';
   P.comidas.forEach(function(c){
     h+='<div class="meal"><div class="meal-h"><span class="hh">'+c.h+'</span>'+
