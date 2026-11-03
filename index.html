@@ -438,7 +438,7 @@ function n1(v){return v==null?"—":(Math.round(v*10)/10).toFixed(1);}
 
 /* ============ ESTADO ============ */
 var S={
-  tab:"hoy", diet:null, uid:null, db:null, ready:false, writable:true,
+  tab:"hoy", diet:null, picking:false, uid:null, db:null, ready:false, writable:true,
   profile:null, sessions:[], metrics:[],
   active:null,          // {key,date,id,entries:{},open:exId}
   timer:null, tint:null, wake:null
@@ -498,16 +498,18 @@ function viewHoy(){
   if(!S.profile||!S.profile.startDate) return setupCard();
 
   var w=currentWeek(), blk=blockFor(w);
-  var dow=new Date().getDay(), key=DOWMAP[dow];
+  var dow=new Date().getDay(), key=DOWMAP[dow], keyPlan=key;
   var today=todayISO();
-  var todaySess=S.sessions.filter(function(s){return s.date===today;})[0];
+  var todaySess=S.sessions.filter(function(s){return s.date===today&&doneCount(s)>0;})[0];
+  if(todaySess&&PROGRAM[todaySess.day]) key=todaySess.day;
+  if(S.picking) return pickerView(key,dow);
 
   /* hero */
   if(key){
     var P=PROGRAM[key];
     var done=todaySess?doneCount(todaySess):0, plan=plannedCount(key,w);
     h+='<div class="hero '+P.tone+'"><div class="hero-top">'+
-       '<div class="lbl">'+DOWNAMES[dow]+' · hoy'+(P.hora?' · '+P.hora:'')+'</div>'+
+       '<div class="lbl">'+DOWNAMES[dow]+' · hoy'+(P.hora?' · '+P.hora:'')+(key!==keyPlan?' · en lugar de '+PROGRAM[keyPlan].name:'')+'</div>'+
        '<h2>'+P.name+'</h2><div class="sub">'+esc(P.sub)+'</div>'+
        '<div class="hero-meta">'+
          '<div><div class="k">Ejercicios</div><div class="v num">'+P.ex.length+'</div></div>'+
@@ -518,6 +520,7 @@ function viewHoy(){
        (done?'<div class="prog" style="margin-top:12px"><i style="width:'+Math.min(100,done/plan*100)+'%"></i></div><div class="tiny">'+done+' de '+plan+' series anotadas</div>':'')+
        '</div></div>'+
        '<button class="btn" data-act="start" data-key="'+key+'">'+(done?'Continuar sesión':'Empezar '+P.name)+'</button>'+
+       (done?'':'<button class="btn ghost sm" style="width:100%;margin-top:8px" data-act="pick">Entrenar otra sesión</button>')+
        '<div style="height:12px"></div>';
   } else {
     h+='<div class="hero rest"><div class="hero-top">'+
@@ -959,10 +962,11 @@ document.addEventListener("click",function(ev){
   }
   if(a==="start"||a==="pick"){
     var key=t.getAttribute("data-key");
-    if(a==="pick"){ pickSession(); return; }
+    if(a==="pick"){ S.picking=true; render(); return; }
     openSession(key); return;
   }
-  if(a==="picksel"){ openSession(t.getAttribute("data-key")); return; }
+  if(a==="picksel"){ S.picking=false; openSession(t.getAttribute("data-key")); return; }
+  if(a==="pickcancel"){ S.picking=false; render(); return; }
   if(a==="close"){ S.active=null; stopTimer(); releaseWake(); renderSheet(); render(); if(window.swApplyPending) window.swApplyPending(); return; }
   if(a==="toggle"){
     var id=t.getAttribute("data-ex");
@@ -1023,14 +1027,17 @@ function advanceIfDone(exId){
   }
   A.open=null;
 }
-function pickSession(){
-  var h='<div class="card"><div class="lbl">Elige la sesión</div><div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">';
+function pickerView(actual,dow){
+  var h='<div class="card"><div class="lbl">Elige la sesión de hoy</div>'+
+    '<p class="muted" style="margin:6px 0 0">'+(DOWMAP[dow]?'Hoy toca '+PROGRAM[DOWMAP[dow]].name+'. Elige otra si necesitas moverla; la rutina semanal no cambia.':'Hoy es día de descanso. Puedes recuperar una sesión que te hayas perdido.')+'</p>'+
+    '<div style="display:flex;flex-direction:column;gap:8px;margin-top:12px">';
   ORDER.forEach(function(k){
-    var P=PROGRAM[k];
-    h+='<button class="btn ghost" style="text-align:left;text-transform:none;font-size:16px" data-act="picksel" data-key="'+k+'">'+P.name+' — '+esc(P.sub)+'</button>';
+    var P=PROGRAM[k], hecha=S.sessions.filter(function(s){return s.day===k&&s.date===todayISO()&&doneCount(s)>0;}).length>0;
+    h+='<button class="btn ghost" style="text-align:left;text-transform:none;font-size:16px;'+(k===actual?'border-color:var(--accent);':'')+'" data-act="picksel" data-key="'+k+'">'+
+       P.name+(hecha?' · ya registrada hoy':'')+'<br><span style="font-size:12.5px;color:var(--fg-3);font-weight:400">'+esc(P.sub)+'</span></button>';
   });
-  h+='</div></div>';
-  document.getElementById("view").innerHTML=h;
+  h+='</div><div style="height:10px"></div><button class="btn ghost sm" style="width:100%" data-act="pickcancel">Cancelar</button></div>';
+  return h;
 }
 function openSession(key){
   var d=todayISO(), id=d+"_"+key;
