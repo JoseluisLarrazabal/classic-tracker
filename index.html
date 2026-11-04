@@ -286,6 +286,11 @@ tr.now td{background:var(--accent-soft);}
 .empty{text-align:center;color:var(--fg-3);padding:26px 14px;font-size:13.5px;}
 
 /* cabecera kg / reps y pestaña dieta */
+.wurows{display:flex;flex-direction:column;gap:3px;margin:5px 0 3px;}
+.wurow{display:flex;align-items:baseline;gap:7px;font-family:var(--display);font-variant-numeric:tabular-nums;}
+.wurow .wua{font-size:10.5px;font-weight:700;letter-spacing:.08em;color:var(--steel-ink);width:21px;flex:none;}
+.wurow .wuv{font-size:15.5px;font-weight:700;color:var(--fg);}
+.wurow .wux{font-size:12px;color:var(--fg-3);}
 .wu{background:var(--steel-soft);border-left:3px solid var(--steel);border-radius:0 7px 7px 0;
   padding:8px 11px;margin-bottom:10px;}
 .wu .wul{display:block;font-family:var(--display);font-size:10.5px;font-weight:700;letter-spacing:.12em;
@@ -885,9 +890,21 @@ function renderSheet(){
       } else h+='<div class="prev">Primera vez con este ejercicio. Elige un peso que te deje a 2 reps del fallo.</div>';
       var wu=warmup(e,A.key,A.date,A.entries);
       if(wu){
-        h+='<div class="wu"><span class="wul">Aproximación · no cuentan</span><span class="wut">'+
-           (wu.texto?esc(wu.texto):wu.sets.map(function(s){return s.w+' kg × '+s.r;}).join('  →  '))+'</span>'+
-           (wu.texto?'':'<span class="wun">Sin llegar cerca del fallo. 60–90 s entre ellas.</span>')+'</div>';
+        var nwu=wu.sets?wu.sets.length:0;
+        h+='<div class="wu"><span class="wul">Antes de empezar · '+
+           (wu.texto?'no cuenta':(nwu===1?'1 serie de aproximación':nwu+' series de aproximación'))+'</span>';
+        if(wu.texto) h+='<span class="wut">'+esc(wu.texto)+'</span>';
+        else {
+          h+='<div class="wurows">';
+          wu.sets.forEach(function(s,i){
+            h+='<div class="wurow"><span class="wua">A'+(i+1)+'</span><span class="wuv">'+s.w+' kg</span>'+
+               '<span class="wux">×</span><span class="wuv">'+s.r+' reps</span></div>';
+          });
+          h+='</div>';
+        }
+        h+='<span class="wun">'+(wu.texto?'Lejos del fallo: es para calentar el patrón, no para cansarte.'
+           :(nwu===1?'Lejos del fallo. Descansa 60 s y entras a las series efectivas.'
+                    :'Lejos del fallo. 60–90 s de descanso entre cada una.'))+'</span></div>';
       }
       h+='<div class="setkeys"><span class="setn">S0</span><span class="kh">kg</span><span class="xs"></span><span class="kh">reps</span><span class="bs"></span></div>';
       h+='<div class="sets">';
