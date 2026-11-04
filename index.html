@@ -286,6 +286,13 @@ tr.now td{background:var(--accent-soft);}
 .empty{text-align:center;color:var(--fg-3);padding:26px 14px;font-size:13.5px;}
 
 /* cabecera kg / reps y pestaña dieta */
+.wu{background:var(--steel-soft);border-left:3px solid var(--steel);border-radius:0 7px 7px 0;
+  padding:8px 11px;margin-bottom:10px;}
+.wu .wul{display:block;font-family:var(--display);font-size:10.5px;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--steel-ink);margin-bottom:2px;}
+.wu .wut{font-family:var(--display);font-size:15px;font-weight:700;color:var(--fg);
+  font-variant-numeric:tabular-nums;}
+.wu .wun{display:block;font-family:var(--body);font-size:11.5px;font-weight:400;color:var(--fg-2);margin-top:3px;}
 .setkeys{display:flex;gap:7px;align-items:center;margin-bottom:5px;}
 .setkeys .setn{visibility:hidden;}
 .setkeys .kh{flex:1;min-width:0;text-align:center;font-family:var(--display);font-size:10.5px;
@@ -448,6 +455,56 @@ function qwrite(path,fn){
   var prev=queues[path]||Promise.resolve();
   var next=prev.then(fn,fn).catch(function(e){ if(e&&e.code==="invalid_argument"){S.writable=false;render();} });
   queues[path]=next; return next;
+}
+
+
+/* ============ SERIES DE APROXIMACIÓN ============ */
+/* Cuántas antes de las efectivas. Depende de si el ejercicio abre el trabajo
+   de ese músculo en la sesión (más) o llega con el músculo ya caliente (menos). */
+var WU={
+  incdb:3, pull:3, ohpdb:2, rowlow:1, latdb:1, curlz:1, pushd:0,
+  squat:3, rdl:2, preslo:1, curlsit:1, calfst:1, abd:0, vac1:0,
+  incbb:3, flatm:1, flypul:1, latcab:1, arnold:1, trioh:1, pushrope:0,
+  latpull:3, bbrow:2, pullov:1, facep:0, revpd:0, curlinc:1, hammer:0,
+  hip:3, preshi:2, curlly:1, lunge:1, legext:1, calfsit:1, crunch:0
+};
+var WUPCT={3:[[0.40,8],[0.60,5],[0.80,3]], 2:[[0.50,6],[0.75,3]], 1:[[0.60,6]]};
+
+function roundW(w){
+  if(w>=60) return Math.round(w/5)*5;
+  if(w>=20) return Math.round(w/2.5)*2.5;
+  return Math.round(w*2)/2;
+}
+/* Peso mínimo del implemento: una barra no baja de su propio peso. */
+var WUBAR={squat:20, rdl:20, bbrow:20, incbb:20};
+/* Por debajo de esto los porcentajes dan cifras absurdas (2,5 kg en laterales). */
+var WUMIN=12;
+
+function warmup(ex,dayKey,date,entries){
+  var n=WU[ex.id]; if(n===undefined) n=1;
+  if(!n) return null;
+  var w=null;
+  var hoy=entries&&entries[ex.id];
+  if(hoy&&hoy[0]&&hoy[0].w) w=hoy[0].w;
+  if(w==null){
+    var prev=lastFor(dayKey,ex.id,date);
+    if(prev) prev.sets.forEach(function(s){ if(s&&s.w&&(w==null||s.w>w)) w=s.w; });
+  }
+  if(w==null) return {texto:"Sin referencia aún: sube de peso en 2 series ligeras hasta dar con el que te deje a 2 reps del fallo."};
+  if(w<=0) return {texto:"Peso corporal: 2 series de 3–5 reps con asistencia, o unos jalones ligeros."};
+  var bar=WUBAR[ex.id]||0;
+  if(w<WUMIN&&w<=bar+2) return {texto:"Solo la barra vacía, 1 serie de 10 reps."};
+  if(w<WUMIN) return {texto:"1 serie de 10 reps con el peso más ligero que tengas, para calentar el patrón."};
+  var out=[];
+  (WUPCT[n]||WUPCT[1]).forEach(function(p){
+    var x=roundW(Math.max(w*p[0],bar));
+    if(x>=w-1) return;                                        // nunca igual ni por encima del de trabajo
+    if(out.length&&x-out[out.length-1].w<2.5) return;         // saltos que no aportan nada
+    out.push({w:x,r:p[1]});
+  });
+  if(!out.length) return bar?{texto:"Barra vacía, 1 serie de 10 reps."}
+                            :{texto:"1 serie ligera de 10 reps para calentar el patrón."};
+  return {sets:out};
 }
 
 /* ============ CÁLCULOS ============ */
@@ -745,6 +802,8 @@ function viewPlan(){
     '<div class="legend-row"><span class="tag t-green">2/3</span><span>Series anotadas de las que tocan hoy.</span></div>'+
     '</div>';
 
+  h+='<div class="lbl" style="margin:18px 0 7px">Series de aproximación</div><div class="card">'+    '<p class="muted" style="margin:0 0 9px">La app las calcula sola a partir del peso que levantaste la última vez y te las muestra al abrir cada ejercicio. No cuentan como series efectivas y van lejos del fallo: su trabajo es subir la temperatura del músculo y repasar el patrón, no fatigarte.</p>'+    '<table><tr><th>Ejercicio</th><th class="num">Aproximaciones</th></tr>'+    '<tr><td>El que abre el trabajo de un músculo (sentadilla, jalón, press inclinado, hip thrust)</td><td class="num">3</td></tr>'+    '<tr><td>Compuesto con el músculo ya caliente (rumano, remo con barra, prensa)</td><td class="num">2</td></tr>'+    '<tr><td>Accesorio o máquina</td><td class="num">1</td></tr>'+    '<tr><td>Aislamiento al final (push-down, pájaros, abducción)</td><td class="num">0</td></tr>'+    '</table><p class="tiny" style="margin-top:9px">Los pesos salen del 40, 60 y 80 % del de trabajo. Nunca baja del peso de la barra vacía, y por debajo de 12 kg te pide una serie ligera sin número, porque los porcentajes ahí dan cifras sin sentido.</p></div>';
+
   h+='<div class="lbl" style="margin:18px 0 7px">Descansos</div><div class="card"><table>'+
      '<tr><td>Compuestos pesados</td><td class="num">2–3 min</td></tr>'+
      '<tr><td>Accesorios</td><td class="num">90–120 s</td></tr>'+
@@ -824,6 +883,12 @@ function renderSheet(){
         h+='<div class="prev">Última vez ('+fmtDate(prev.date)+'): <b>'+
            prev.sets.filter(function(x){return x&&x.r;}).map(function(x){return (x.w||0)+"×"+x.r;}).join("  ")+'</b></div>';
       } else h+='<div class="prev">Primera vez con este ejercicio. Elige un peso que te deje a 2 reps del fallo.</div>';
+      var wu=warmup(e,A.key,A.date,A.entries);
+      if(wu){
+        h+='<div class="wu"><span class="wul">Aproximación · no cuentan</span><span class="wut">'+
+           (wu.texto?esc(wu.texto):wu.sets.map(function(s){return s.w+' kg × '+s.r;}).join('  →  '))+'</span>'+
+           (wu.texto?'':'<span class="wun">Sin llegar cerca del fallo. 60–90 s entre ellas.</span>')+'</div>';
+      }
       h+='<div class="setkeys"><span class="setn">S0</span><span class="kh">kg</span><span class="xs"></span><span class="kh">reps</span><span class="bs"></span></div>';
       h+='<div class="sets">';
       for(var i=0;i<nsets;i++){
