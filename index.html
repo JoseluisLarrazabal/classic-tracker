@@ -571,7 +571,7 @@ function viewHoy(){
     var P=PROGRAM[key];
     var done=todaySess?doneCount(todaySess):0, plan=plannedCount(key,w);
     h+='<div class="hero '+P.tone+'"><div class="hero-top">'+
-       '<div class="lbl">'+DOWNAMES[dow]+' · hoy'+(P.hora?' · '+P.hora:'')+(key!==keyPlan?' · en lugar de '+PROGRAM[keyPlan].name:'')+'</div>'+
+       '<div class="lbl">'+DOWNAMES[dow]+' · hoy'+(P.hora?' · '+P.hora:'')+(key!==keyPlan&&PROGRAM[keyPlan]?' · en lugar de '+PROGRAM[keyPlan].name:(key&&!keyPlan?' · recuperando sesión':''))+'</div>'+
        '<h2>'+P.name+'</h2><div class="sub">'+esc(P.sub)+'</div>'+
        '<div class="hero-meta">'+
          '<div><div class="k">Ejercicios</div><div class="v num">'+P.ex.length+'</div></div>'+
