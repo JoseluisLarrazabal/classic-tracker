@@ -512,6 +512,34 @@ function warmup(ex,dayKey,date,entries){
   return {sets:out};
 }
 
+
+/* ============ GASTO REAL (TDEE) ============ */
+/* La fórmula de libro se equivoca ±250 kcal. Tu propia balanza no.
+   Gasto = lo que comiste + lo que perdiste, convertido a kcal. */
+function planKcalMedia(){
+  var s=0; for(var d=0;d<7;d++){ var p=DIETA[DIETDOW[d]]; s+=p?p.tot.k:0; }
+  return s/7;
+}
+function tdeeReal(){
+  var ms=S.metrics.filter(function(m){return m.weight!=null;})
+                  .slice().sort(function(a,b){return a.date<b.date?-1:1;});
+  if(ms.length<10) return {faltan:10-ms.length};
+  var n=Math.max(3,Math.min(5,Math.floor(ms.length/3)));
+  var ini=ms.slice(0,n), fin=ms.slice(-n);
+  var pIni=avg(ini.map(function(m){return m.weight;}));
+  var pFin=avg(fin.map(function(m){return m.weight;}));
+  var fIni=ini[Math.floor(n/2)].date, fFin=fin[Math.floor(n/2)].date;
+  var dias=dayDiff(fFin,fIni);
+  if(dias<14) return {diasCortos:dias};
+  var delta=pFin-pIni;
+  var comido=planKcalMedia();
+  var tdee=comido-(delta*7700/dias);
+  var porSem=delta*7/dias;
+  return {tdee:Math.round(tdee), comido:Math.round(comido), porSem:porSem, dias:dias,
+          pIni:pIni, pFin:pFin, n:ms.length,
+          raro:(tdee<1600||tdee>4200)};
+}
+
 /* ============ CÁLCULOS ============ */
 function currentWeek(){
   if(!S.profile||!S.profile.startDate) return null;
@@ -649,6 +677,27 @@ function viewProgreso(){
     '<div class="field"><label for="mc">Cintura (cm)</label><input type="number" inputmode="decimal" step="0.1" id="mc" value="'+(today.waist!=null?today.waist:"")+'" placeholder="94.0"></div>'+
     '</div><div style="height:10px"></div><button class="btn" data-act="savemetric">Guardar</button>'+
     '<p class="tiny" style="margin-top:9px">Peso: al despertar, después del baño, en ayunas. Cintura: a la altura del ombligo, sin contraer.</p></div>';
+
+  var td=tdeeReal();
+  h+='<div class="card"><div class="lbl">Tu gasto real</div>';
+  if(td.faltan){
+    h+='<p class="muted" style="margin:7px 0 0">Anota tu peso '+td.faltan+' día'+(td.faltan>1?'s':'')+
+       ' más y aquí aparecerá cuántas calorías quemas de verdad, calculado con tu propia balanza en vez de con una fórmula.</p>';
+  } else if(td.diasCortos){
+    h+='<p class="muted" style="margin:7px 0 0">Hacen falta 14 días entre tu primer y último peso; llevas '+td.diasCortos+'.</p>';
+  } else {
+    var meta=Math.round((td.tdee-440)/10)*10;
+    h+='<div class="macros" style="margin-top:10px">'+
+       '<div class="stat"><div class="k">Gasto real</div><div class="v num">'+td.tdee+'</div><div class="d">kcal/día</div></div>'+
+       '<div class="stat"><div class="k">Comiendo</div><div class="v num">'+td.comido+'</div><div class="d">media del plan</div></div>'+
+       '<div class="stat"><div class="k">Ritmo</div><div class="v num">'+(td.porSem>0?'+':'')+n1(td.porSem)+'</div><div class="d">kg/semana</div></div>'+
+       '<div class="stat"><div class="k">Para −0,4 kg/sem</div><div class="v num">'+meta+'</div><div class="d">kcal/día</div></div>'+
+       '</div>';
+    h+='<p class="tiny" style="margin:2px 0 0">Calculado sobre '+td.dias+' días y '+td.n+' pesos, de '+n1(td.pIni)+' a '+n1(td.pFin)+' kg. '+
+       'Asume que seguiste el plan: si comiste de más, tu gasto real es mayor que este número.</p>';
+    if(td.raro) h+='<div class="hardnote" style="margin:10px 0 0">Este resultado se sale de lo plausible. Suele significar que el peso no se anotó siempre en las mismas condiciones, o que la comida se alejó bastante del plan.</div>';
+  }
+  h+='</div>';
 
   var ws=S.metrics.filter(function(x){return x.weight!=null;}).slice().reverse();
   var cs=S.metrics.filter(function(x){return x.waist!=null;}).slice().reverse();
