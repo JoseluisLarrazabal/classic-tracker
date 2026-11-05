@@ -178,6 +178,7 @@ p{margin:0 0 10px;}
 .ex-s{font-family:var(--display);font-size:13px;color:var(--fg-2);font-weight:600;letter-spacing:.03em;margin-top:2px;}
 .ex-badge{font-family:var(--display);font-size:12px;font-weight:700;letter-spacing:.06em;padding:2px 7px;border-radius:5px;white-space:nowrap;}
 .b-prio{background:var(--accent-soft);color:var(--accent-ink);}
+.b-up{background:var(--good-soft);color:var(--good);}
 .b-ok{background:var(--good-soft);color:var(--good);}
 .b-ss{background:var(--steel-soft);color:var(--steel-ink);}
 .ex-body{border-top:1px solid var(--line);padding:12px 13px;background:var(--surface-2);}
@@ -538,6 +539,16 @@ function tdeeReal(){
   return {tdee:Math.round(tdee), comido:Math.round(comido), porSem:porSem, dias:dias,
           pIni:pIni, pFin:pFin, n:ms.length,
           raro:(tdee<1600||tdee>4200)};
+}
+
+/* ============ DOBLE PROGRESIÓN ============ */
+function topeRango(r){ var m=String(r).match(/(\d+)\s*[–-]\s*(\d+)/); return m?+m[2]:null; }
+function tocaSubir(dayKey,ex,date){
+  var top=topeRango(ex.r); if(!top) return false;
+  var prev=lastFor(dayKey,ex.id,date); if(!prev) return false;
+  var sets=prev.sets.filter(function(s){return s&&s.r;});
+  if(sets.length<2) return false;
+  return sets.every(function(s){return s.r>=top;});
 }
 
 /* ============ CÁLCULOS ============ */
@@ -929,6 +940,7 @@ function renderSheet(){
       '<div class="ex-s">'+nsets+' × '+e.r+' · RIR '+e.rir+' · '+(e.rest?(e.rest>=60?(e.rest/60)+" min":e.rest+" s"):"0 s")+'</div></div>'+
       (e.ss?'<span class="ex-badge b-ss">SS '+e.ss+'</span>':'')+
       (e.prio?'<span class="ex-badge b-prio">PRIO</span>':'')+
+      (tocaSubir(A.key,e,A.date)&&!filled?'<span class="ex-badge b-up">Sube peso</span>':'')+
       (filled?'<span class="ex-badge b-ok">'+filled+'/'+nsets+'</span>':'')+
       '</div>';
     if(open){
@@ -960,9 +972,15 @@ function renderSheet(){
       for(var i=0;i<nsets;i++){
         var v=arr[i]||{};
         var ph=prev&&prev.sets[i]?prev.sets[i]:null;
+        var sug=v.w!=null?v.w:null;
+        if(sug==null){
+          for(var jj=i-1;jj>=0;jj--){ if(arr[jj]&&arr[jj].w!=null){ sug=arr[jj].w; break; } }
+          if(sug==null&&ph&&ph.w!=null) sug=ph.w;
+          if(sug==null&&prev&&prev.sets[0]&&prev.sets[0].w!=null) sug=prev.sets[0].w;
+        }
         h+='<div class="setrow'+(v.r?' filled':'')+'">'+
           '<span class="setn">S'+(i+1)+'</span>'+
-          '<input type="number" inputmode="decimal" step="0.5" id="w_'+e.id+'_'+i+'" value="'+(v.w!=null?v.w:"")+'" placeholder="'+(ph&&ph.w!=null?ph.w:"kg")+'" aria-label="Peso serie '+(i+1)+'" data-ex="'+e.id+'" data-i="'+i+'" data-f="w">'+
+          '<input type="number" inputmode="decimal" step="0.5" id="w_'+e.id+'_'+i+'" value="'+(sug!=null?sug:"")+'" placeholder="kg" aria-label="Peso serie '+(i+1)+'" data-ex="'+e.id+'" data-i="'+i+'" data-f="w">'+
           '<span class="x">×</span>'+
           '<input type="number" inputmode="numeric" step="1" id="r_'+e.id+'_'+i+'" value="'+(v.r!=null?v.r:"")+'" placeholder="'+(ph&&ph.r!=null?ph.r:"reps")+'" aria-label="Reps serie '+(i+1)+'" data-ex="'+e.id+'" data-i="'+i+'" data-f="r">'+
           '<button class="mini'+(v.r?' on':'')+'" data-act="logset" data-ex="'+e.id+'" data-i="'+i+'" data-rest="'+e.rest+'" aria-label="Guardar serie '+(i+1)+'">✓</button>'+
@@ -1112,12 +1130,7 @@ document.addEventListener("click",function(ev){
     if(rv==null||isNaN(rv)){ if(ri){ri.focus();} return; }
     var arr=S.active.entries[ex]||[];
     while(arr.length<=i) arr.push(null);
-    if(wv==null||isNaN(wv)){
-      var carry=null;
-      for(var j=i-1;j>=0;j--){ if(arr[j]&&arr[j].w){carry=arr[j].w;break;} }
-      if(carry==null){ var pv=lastFor(S.active.key,ex,S.active.date); if(pv&&pv.sets[i]&&pv.sets[i].w) carry=pv.sets[i].w; }
-      wv=carry||0;
-    }
+    if(wv==null||isNaN(wv)){ if(wi){wi.focus();} return; }
     arr[i]={w:wv,r:rv};
     S.active.entries[ex]=arr;
     saveSession();
