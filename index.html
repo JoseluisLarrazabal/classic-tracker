@@ -541,6 +541,18 @@ function tdeeReal(){
           raro:(tdee<1600||tdee>4200)};
 }
 
+/* ============ CARDIO Z2 ============ */
+/* 4 caminatas semanales de 35–45 min a FC 110–130. Son ~200 kcal/día de
+   media: sin ellas el déficit del plan casi desaparece. */
+var CARDIO_META=4, CARDIO_MIN=35;
+function cardioDe(fecha){ var m=S.metrics.filter(function(x){return x.date===fecha;})[0]; return (m&&m.cardio)||0; }
+function cardioSemana(){
+  if(!S.profile||!S.profile.startDate) return 0;
+  var w=currentWeek(), n=0;
+  S.metrics.forEach(function(m){ if(m.cardio>=20&&weekOf(m.date)===w) n++; });
+  return n;
+}
+
 /* ============ DOBLE PROGRESIÓN ============ */
 function topeRango(r){ var m=String(r).match(/(\d+)\s*[–-]\s*(\d+)/); return m?+m[2]:null; }
 function tocaSubir(dayKey,ex,date){
@@ -635,6 +647,26 @@ function viewHoy(){
   h+='<div class="card"><div class="lbl">Semana '+(w<1?0:w)+' · '+esc(blk.name)+'</div>'+
      '<div class="muted" style="margin-top:5px">'+esc(blk.note)+'</div></div>';
 
+  /* cardio */
+  var cHoy=cardioDe(today), cSem=cardioSemana();
+  h+='<div class="card" style="border-left:3px solid '+(cHoy?'var(--good)':'var(--steel)')+'">'+
+     '<div style="display:flex;align-items:baseline;gap:9px">'+
+     '<div class="lbl">Caminata Z2</div>'+
+     '<div class="tiny" style="margin-left:auto">'+cSem+' de '+CARDIO_META+' esta semana</div></div>';
+  if(cHoy){
+    h+='<div style="display:flex;align-items:baseline;gap:8px;margin-top:6px">'+
+       '<div class="v num" style="font-family:var(--display);font-size:24px;font-weight:700;color:var(--good)">'+cHoy+' min</div>'+
+       '<div class="tiny">hecho hoy</div>'+
+       '<button class="btn ghost sm" style="margin-left:auto" data-act="cardio" data-min="0">Borrar</button></div>';
+  } else {
+    h+='<p class="muted" style="margin:6px 0 10px">'+(key?'Al salir del gimnasio o en otro momento del día.':'Hoy no hay pesas: buen día para la caminata.')+
+       ' 5–6 km/h con 3–5 % de inclinación, o en la calle a paso vivo. Debes poder hablar sin ahogarte.</p>'+
+       '<div class="row">'+[30,40,45].map(function(m){
+         return '<button class="btn ghost sm" style="width:100%" data-act="cardio" data-min="'+m+'">'+m+' min</button>';
+       }).join('')+'</div>';
+  }
+  h+='</div>';
+
   /* semana */
   h+='<div class="lbl" style="margin:16px 0 7px">Tu semana</div><div class="week">';
   for(var i=1;i<=7;i++){
@@ -663,6 +695,8 @@ function viewHoy(){
        '<div class="d'+(dwa==null?'':(dwa>0?' up':' down'))+'">'+(dwa==null?'sin dato previo':(dwa>0?'+':'')+n1(dwa)+' cm')+'</div></div>'+
      '<div class="stat"><div class="k">Sesiones</div><div class="v num">'+sessionsThisWeek().filter(function(s){return doneCount(s)>0;}).length+'<small>/5</small></div>'+
        '<div class="d">meta: 5 por semana</div></div>'+
+     '<div class="stat"><div class="k">Caminatas</div><div class="v num">'+cardioSemana()+'<small>/'+CARDIO_META+'</small></div>'+
+       '<div class="d">Z2, 35–45 min</div></div>'+
      '</div>';
   if(a1==null) h+='<div class="note">Anota tu peso cada mañana en la pestaña <b>Progreso</b>. Lo que importa es el promedio semanal, no el número de un día.</div>';
   return h;
@@ -1063,6 +1097,7 @@ function saveMetric(date,patch){
   var body={date:date};
   if(patch.weight!=null||cur.weight!=null) body.weight=(patch.weight!=null?patch.weight:cur.weight);
   if(patch.waist!=null||cur.waist!=null) body.waist=(patch.waist!=null?patch.waist:cur.waist);
+  if(patch.cardio!=null||cur.cardio!=null) body.cardio=(patch.cardio!=null?patch.cardio:cur.cardio);
   var i=S.metrics.findIndex(function(x){return x.date===date;});
   if(i>=0) S.metrics[i]=body; else S.metrics.unshift(body);
   S.metrics.sort(function(a,b){return a.date<b.date?1:-1;});
@@ -1101,6 +1136,7 @@ document.addEventListener("click",function(ev){
   var t=ev.target.closest("[data-act]"); if(!t) return;
   var a=t.getAttribute("data-act");
 
+  if(a==="cardio"){ saveMetric(todayISO(),{cardio:+t.getAttribute("data-min")}); render(); return; }
   if(a==="tab"){ S.tab=t.getAttribute("data-tab"); render(); return; }
   if(a==="setstart"){
     var v=(document.getElementById("startd")||{}).value;
