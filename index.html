@@ -482,7 +482,7 @@ function roundW(w){
   return Math.round(w*2)/2;
 }
 /* Peso mínimo del implemento: una barra no baja de su propio peso. */
-var WUBAR={squat:20, rdl:20, bbrow:20, incbb:20};
+var WUBAR={squat:20, rdl:20, bbrow:20, incbb:20, hip:20};
 /* Por debajo de esto los porcentajes dan cifras absurdas (2,5 kg en laterales). */
 var WUMIN=12;
 
@@ -499,18 +499,19 @@ function warmup(ex,dayKey,date,entries){
   if(w==null) return {texto:"Sin referencia aún: sube de peso en 2 series ligeras hasta dar con el que te deje a 2 reps del fallo."};
   if(w<=0) return {texto:"Peso corporal: 2 series de 3–5 reps con asistencia, o unos jalones ligeros."};
   var bar=WUBAR[ex.id]||0;
-  if(w<WUMIN&&w<=bar+2) return {texto:"Solo la barra vacía, 1 serie de 10 reps."};
-  if(w<WUMIN) return {texto:"1 serie de 10 reps con el peso más ligero que tengas, para calentar el patrón."};
+  var real=w+bar;                       // en barra, lo anotado son discos
+  if(real<WUMIN) return {texto:"1 serie de 10 reps con el peso más ligero que tengas, para calentar el patrón."};
   var out=[];
   (WUPCT[n]||WUPCT[1]).forEach(function(p){
-    var x=roundW(Math.max(w*p[0],bar));
-    if(x>=w-1) return;                                        // nunca igual ni por encima del de trabajo
-    if(out.length&&x-out[out.length-1].w<2.5) return;         // saltos que no aportan nada
-    out.push({w:x,r:p[1]});
+    var obj=Math.max(roundW(real*p[0]),bar);
+    if(obj>=real-1) return;                                   // nunca igual ni por encima del de trabajo
+    var discos=obj-bar;
+    if(out.length&&discos-out[out.length-1].w<2.5) return;    // saltos que no aportan nada
+    out.push({w:discos,r:p[1]});
   });
   if(!out.length) return bar?{texto:"Barra vacía, 1 serie de 10 reps."}
                             :{texto:"1 serie ligera de 10 reps para calentar el patrón."};
-  return {sets:out};
+  return {sets:out, bar:bar>0};
 }
 
 
@@ -901,7 +902,7 @@ function viewPlan(){
     '<div class="legend-row"><span class="tag t-green">2/3</span><span>Series anotadas de las que tocan hoy.</span></div>'+
     '</div>';
 
-  h+='<div class="lbl" style="margin:18px 0 7px">Series de aproximación</div><div class="card">'+    '<p class="muted" style="margin:0 0 9px">La app las calcula sola a partir del peso que levantaste la última vez y te las muestra al abrir cada ejercicio. No cuentan como series efectivas y van lejos del fallo: su trabajo es subir la temperatura del músculo y repasar el patrón, no fatigarte.</p>'+    '<table><tr><th>Ejercicio</th><th class="num">Aproximaciones</th></tr>'+    '<tr><td>El que abre el trabajo de un músculo (sentadilla, jalón, press inclinado, hip thrust)</td><td class="num">3</td></tr>'+    '<tr><td>Compuesto con el músculo ya caliente (rumano, remo con barra, prensa)</td><td class="num">2</td></tr>'+    '<tr><td>Accesorio o máquina</td><td class="num">1</td></tr>'+    '<tr><td>Aislamiento al final (push-down, pájaros, abducción)</td><td class="num">0</td></tr>'+    '</table><p class="tiny" style="margin-top:9px">Los pesos salen del 40, 60 y 80 % del de trabajo. Nunca baja del peso de la barra vacía, y por debajo de 12 kg te pide una serie ligera sin número, porque los porcentajes ahí dan cifras sin sentido.</p></div>';
+  h+='<div class="lbl" style="margin:18px 0 7px">Series de aproximación</div><div class="card">'+    '<p class="muted" style="margin:0 0 9px">La app las calcula sola a partir del peso que levantaste la última vez y te las muestra al abrir cada ejercicio. No cuentan como series efectivas y van lejos del fallo: su trabajo es subir la temperatura del músculo y repasar el patrón, no fatigarte.</p>'+    '<table><tr><th>Ejercicio</th><th class="num">Aproximaciones</th></tr>'+    '<tr><td>El que abre el trabajo de un músculo (sentadilla, jalón, press inclinado, hip thrust)</td><td class="num">3</td></tr>'+    '<tr><td>Compuesto con el músculo ya caliente (rumano, remo con barra, prensa)</td><td class="num">2</td></tr>'+    '<tr><td>Accesorio o máquina</td><td class="num">1</td></tr>'+    '<tr><td>Aislamiento al final (push-down, pájaros, abducción)</td><td class="num">0</td></tr>'+    '</table><p class="tiny" style="margin-top:9px">Los pesos salen del 40, 60 y 80 % del de trabajo. En los ejercicios con barra, el número que anotas son los discos: la app le suma 20 kg de barra para calcular sobre la carga real y te devuelve los discos a poner. Por debajo de 12 kg reales te pide una serie ligera sin número, porque los porcentajes ahí dan cifras sin sentido.</p></div>';
 
   h+='<div class="lbl" style="margin:18px 0 7px">Descansos</div><div class="card"><table>'+
      '<tr><td>Compuestos pesados</td><td class="num">2–3 min</td></tr>'+
@@ -992,7 +993,8 @@ function renderSheet(){
         else {
           h+='<div class="wurows">';
           wu.sets.forEach(function(s,i){
-            h+='<div class="wurow"><span class="wua">A'+(i+1)+'</span><span class="wuv">'+s.w+' kg</span>'+
+            h+='<div class="wurow"><span class="wua">A'+(i+1)+'</span><span class="wuv">'+
+               (s.w<=0?'barra vacía':(s.w+' kg'+(wu.bar?' en discos':'')))+'</span>'+
                '<span class="wux">×</span><span class="wuv">'+s.r+' reps</span></div>';
           });
           h+='</div>';
